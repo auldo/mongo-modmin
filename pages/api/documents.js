@@ -16,8 +16,11 @@ export default async function collections(req, res) {
                 documents.push(doc)
             })
             res.status(200).json([...documents])
-        });
+        })
+        connection.on('error', function(){
+            res.status(500).json({error: "Database not found."})
+        })
     } catch(e){
-        res.status(200).json({ error: e })
+        res.status(500).json({ error: e })
     }
 }

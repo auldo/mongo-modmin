@@ -10,8 +10,11 @@ export default function databases(req, res){
         connection.on('open', async function() {
             const results = await new Admin(connection.db).listDatabases()
             res.status(200).json([...results.databases])
-        });
-    } catch(e){
+        })
+        connection.on('error', function(){
+            res.status(500).json({error: "Database not found."})
+        })
+    } catch(e) {
         res.status(200).json({ error: e })
     }
 }
