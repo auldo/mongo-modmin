@@ -7,17 +7,24 @@ import SideNavigation from "../components/SideNavigation";
 
 function Home(){
 
-    const [databaseFetchState, setDatabaseFetchState] = useState({
+     const [databaseFetchState, setDatabaseFetchState] = useState({
         error: false,
         fetching: false
     })
-    const [databases, setDatabases] = useState([])
+     const [databases, setDatabases] = useState([])
+     const [selectedDatabase, setSelectedDatabase] = useState(undefined)
+     const [collections, setCollections] = useState([])
 
-    useEffect(() => {
+     useEffect(() => {
         fetchDatabases()
     }, [])
 
-    function fetchDatabases(){
+     useEffect(() => {
+        if(selectedDatabase !== undefined)
+            fetchCollections()
+    }, [selectedDatabase])
+
+     function fetchDatabases(){
         setDatabaseFetchState({error: false, fetching: true})
         fetch('api/databases')
             .then((res) => res.json())
@@ -30,6 +37,20 @@ function Home(){
             })
     }
 
+     function fetchCollections(){
+        fetch('api/collections?database=' + selectedDatabase)
+            .then((res) => res.json())
+            .then((data) => {
+                if(Array.isArray(data)) {
+                    setCollections(data)
+                }
+            })
+    }
+
+     function onDatabaseChanged(newDatabase){
+        setSelectedDatabase(newDatabase)
+    }
+
     return (
         <div className={"flex flex-1 flex-col bg-slate-100"}>
             <Header />
@@ -40,8 +61,8 @@ function Home(){
                     <Connecting />
                 ) : (
                     <>
-                        <SideNavigation databases={databases} />
-                        <MainView />
+                        <SideNavigation databases={databases} onDatabaseChanged={onDatabaseChanged} />
+                        <MainView database={selectedDatabase} collections={collections} />
                     </>
                 )
             )}

@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 
 export default async function collections(req, res) {
-    const database = req.query.db
+    const database = req.query.database
     const collectionName = req.query.collection
     try {
         const connection = mongoose.createConnection('mongodb://localhost:27017/' + database, {
